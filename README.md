@@ -30,6 +30,7 @@ xhost +SI:localuser:$(id -un)
 
 ### 1.2 - Docker commands
 Simple interface to launch docker commands
+
 ![Docker Command](images/docker_command_image.png)
 
 
