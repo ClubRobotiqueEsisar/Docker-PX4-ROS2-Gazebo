@@ -30,8 +30,8 @@ xhost +SI:localuser:$(id -un)
 
 ### 1.2 - Docker commands
 Simple interface to launch docker commands
+![Docker Command](images/docker_command_image.png)
 
-![[Pasted image 20260724015818.png]]
 
 ```bash
 ./docker_commands.sh
