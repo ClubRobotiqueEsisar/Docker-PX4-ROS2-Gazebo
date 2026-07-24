@@ -1,7 +1,9 @@
 #!/bin/bash
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
-mkdir $SCRIPT_DIR/../log
+echo $SCRIPT_DIR
+
+mkdir -p "$SCRIPT_DIR/../log"
 
 read -s -p "Write the password of your container : " PASSWORD
 echo

@@ -1,15 +1,11 @@
 FROM ubuntu:24.04
 
-# Affichage graphique
-ENV XDG_RUNTIME_DIR=/tmp
-ENV WAYLAND_DISPLAY=wayland-0
-ENV QT_QPA_PLATFORM=xcb
 
 # Mise à jour du système
-RUN apt update && apt upgrade -y
+RUN apt-get update && apt-get upgrade -y
 
 # Installer quelques outils
-RUN apt install -y \
+RUN apt-get install -y \
     sudo \
     bash \
     curl \
@@ -31,6 +27,7 @@ RUN apt install -y \
     libxcb-xinerama0 \
     libxkbcommon-x11-0 \
     libxcb-cursor-dev
+
 
 
 # Change root password
@@ -77,8 +74,8 @@ RUN echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USERNAME} && \
 # Install codium
 RUN wget -O /tmp/codium.deb \
     https://github.com/VSCodium/vscodium/releases/download/1.126.04524/codium_1.126.04524_amd64.deb && \
-    apt update -y && \
-    apt install -y /tmp/codium.deb && \
+    apt-get update -y && \
+    apt-get install -y /tmp/codium.deb && \
     rm /tmp/codium.deb
 
 
@@ -253,10 +250,10 @@ RUN locale-gen en_US en_US.UTF-8 && \
     update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 && \
     export LANG=en_US.UTF-8
 
-RUN apt install -y \
+RUN apt-get install -y \
     software-properties-common && \
     add-apt-repository universe && \
-    apt update -y
+    apt-get update -y
 
 RUN export ROS_APT_SOURCE_VERSION=$(curl -s https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest | grep -F "tag_name" | awk -F'"' '{print $4}') && \
     curl -L -o /tmp/ros2-apt-source.deb "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${ROS_APT_SOURCE_VERSION}/ros2-apt-source_${ROS_APT_SOURCE_VERSION}.$(. /etc/os-release && echo ${UBUNTU_CODENAME:-${VERSION_CODENAME}})_all.deb" && \
@@ -265,14 +262,14 @@ RUN export ROS_APT_SOURCE_VERSION=$(curl -s https://api.github.com/repos/ros-inf
 # Install dev Tools
 RUN grep Suites /etc/apt/sources.list.d/ubuntu.sources
 
-RUN apt update -y && \
-    apt install -y \
+RUN apt-get update -y && \
+    apt-get install -y \
     ros-dev-tools
 
 # Install ROS2
-RUN apt update -y && \
-    apt upgrade -y && \
-    apt install -y \
+RUN apt-get update -y && \
+    apt-get upgrade -y && \
+    apt-get install -y \
     ros-jazzy-desktop
 
 # Sourcing ROS2 to .bashrc
@@ -295,7 +292,7 @@ RUN sudo usermod -aG dialout "$(id -un)" && \
     chmod +x "/home/${USERNAME}/QGroundControl/QGroundControl.AppImage" && \
     cd "/home/${USERNAME}/QGroundControl" && \
     ./QGroundControl.AppImage --appimage-extract && \
-    echo "alias QGroundControl='/home/${USERNAME}/QGroundControl/squashfs-root/AppRun'" >> "/home/${USERNAME}/.bash_aliases"
+    sudo ln -s "/home/${USERNAME}/QGroundControl/squashfs-root/AppRun" "/usr/bin/QGroundControl"
 
 
 # ---------- END Install QGroundControl ---------- #
@@ -304,18 +301,28 @@ RUN sudo usermod -aG dialout "$(id -un)" && \
 # ---------- Install PX4 and Gazebo ---------- #
 
 
-
+# Import PX4 and Gazebo
 RUN export USER=${USERNAME} && \
     cd "/home/${USERNAME}" && \
     git clone -b release/v1.17 https://github.com/ClubRobotiqueEsisar/PX4-GZ-TEMPLATE.git && \
     cd "PX4-GZ-TEMPLATE" && \
     ./install_px4_gz_ros2_for_ubuntu.sh
-    
+
+USER root
+
+# px4 wrapper in /usr/bin
+RUN cat > /usr/bin/px4 <<'EOF' && chmod +x /usr/bin/px4
+#!/bin/bash
+cd /home/wideroz/PX4-Autopilot/build/px4_sitl_default
+exec ./bin/px4 "$@"
+EOF
+
+USER ${USERNAME}
 
 # ---------- END Install PX4 and Gazebo ---------- #
 
 # Clean Image
-RUN sudo apt update && \
+RUN sudo apt-get update && \
     sudo rm -rf /var/lib/apt/lists/*
 
 

@@ -25,12 +25,12 @@ xhost +SI:localuser:$(id -un)
 ```
 
 > [!WARNING]
-> Do not execute this command in root
+> Execute this command as a user
 
 
 ### 1.2 - Docker commands
 Simple interface to launch docker commands
-![[Pasted image 20260722230734.png]]
+![[Pasted image 20260724015818.png]]
 ```bash
 ./docker_commands.sh
 ```
@@ -41,6 +41,8 @@ Available selections :
 - clean : Clean the reclaimable build and image (to see the reclaimable space type : `sudo docker system df`)
 - start : Starts the docker's container
 - stop : Stops the docker's container
+- Remove Container : Delete the container created
+- Run QGroundControl and Gazebo : Run QGroundControl and Gazebo in the container
 
 Those selections are running a script defined bellow PLEASE READ THE WARNINGS.
 ### 1.3 - Docker scripts
@@ -93,6 +95,25 @@ script/stop_container.sh
 ```
 Stop the container
 
+#### i. Remove the container
+```bash
+script/rm_container.sh
+```
+
+#### j. Launch QGroundControl
+```bash
+script/QGroundControl.sh
+```
+Launch QGroundControl in the background.
+Logs are available in the following file : `log/QGroundControl.log`
+
+#### k. Launch Gazebo
+```bash
+script/Gazebo.sh
+```
+Launch Gazebo.
+Logs are available in the following file : `log/Gazebo.log`
+
 ## 3. Setup a controller
 In the docker container, please check the group of the files in the directory : 
 ```bash
@@ -114,7 +135,7 @@ PX4_SYS_AUTOSTART=4010 \
 PX4_SIM_MODEL=gz_x500_mono_cam_down \
 PX4_GZ_MODEL_POSE="-1,0,0.1,0,0,3.14159265359" \
 PX4_GZ_WORLD=test_world \
-~/PX4-Autopilot/build/px4_sitl_default/bin/px4
+px4
 ```
 
 #### VS Codium
@@ -123,15 +144,3 @@ Type the following command in the terminal to code in the container
 codium .
 ```
 This command is an alias of `codium --no-sandbox --ozone-platform=x11` defined in this file : `/home/$USER/.bash_aliases`
-
-
-```Dockerfile
-sudo apt update && sudo apt install -y \
-mesa-utils \
-libglvnd0 \
-libgl1 \
-libglx0 \
-libegl1
-
-glxinfo -B
-```

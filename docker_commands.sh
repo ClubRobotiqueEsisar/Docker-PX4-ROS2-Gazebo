@@ -31,14 +31,14 @@ fi
 # ---------- END Check if fzf is installed if not, install it ---------- #
 
 
-commands=$(echo -e "stop\nstart\nclean\nexec\nrun\nbuild" | fzf)
+commands=$(echo -e "Run QGroundControl and Gazebo\nRemove Container\nStop\nStart\nClean\nExec\nRun\nBuild" | fzf)
 
 # Esc or Ctrl-C
 [ -z "$commands" ] && exit 0
 
 case "$commands" in
-    build)
-        echo "Build"
+    Build)
+        echo "Building"
         read -rp "Build with logs ? (y/N) : " answer
 
         case "$answer" in
@@ -52,8 +52,8 @@ case "$commands" in
                 ;;
         esac
         ;;
-    run)
-        echo "Run"
+    Run)
+        echo "Running"
         read -rp "Run with a joystick controller ? (y/N) : " answer
 
         case "$answer" in
@@ -67,21 +67,32 @@ case "$commands" in
                 ;;
         esac
         ;;
-    exec)
-        echo "Exec"
+    Exec)
+        echo "Executing"
         bash "$SCRIPT_DIR/scripts/exec.sh"
         ;;
-    clean)
-        echo "Clean"
+    Clean)
+        echo "Cleaning"
         bash "$SCRIPT_DIR/scripts/clean.sh"
         ;;
-    start)
-        echo "Start"
+    Start)
+        echo "Starting Container"
         bash "$SCRIPT_DIR/scripts/start_container.sh"
         ;;
-    stop)
-        echo "Stop"
+    Stop)
+        echo "Stoping Container"
         bash "$SCRIPT_DIR/scripts/stop_container.sh"
+        ;;
+
+    "Remove Container")
+        echo "Removing Container"
+        bash "$SCRIPT_DIR/scripts/rm_container.sh"
+        ;;
+
+    "Run QGroundControl and Gazebo")
+        echo "Running QGroundControl and Gazebo..."
+        bash "$SCRIPT_DIR/scripts/QGroundControl.sh"
+        bash "$SCRIPT_DIR/scripts/Gazebo.sh"
         ;;
     *)
         echo "Unknown command : $command"
