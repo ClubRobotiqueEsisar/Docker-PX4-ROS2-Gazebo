@@ -313,8 +313,7 @@ USER root
 # px4 wrapper in /usr/bin
 RUN cat > /usr/bin/px4 <<'EOF' && chmod +x /usr/bin/px4
 #!/bin/bash
-cd ~/PX4-Autopilot/build/px4_sitl_default
-exec ./bin/px4 "$@"
+exec /home/"$(id -un)"/PX4-Autopilot/build/px4_sitl_default/bin/px4 "$@"
 EOF
 
 USER ${USERNAME}
