@@ -11,11 +11,7 @@ Verify on which graphical session you are :
 echo $XDG_SESSION_TYPE
 ```
 If it returns `X11` you reached the requirements,
-If it returns : `wayland` you need to verify that `XWayland` is running :
-```bash
-ps -e | grep Xwayland
-```
-If it is not install XWayland
+If it returns : `wayland`, I did not find a way to display gazebo on the screen so please launch your session with x11.
 
 # I - Installation and scripts
 ## 1.
